@@ -184,6 +184,12 @@ class Database
     }
   }
   
+    //set result
+    private function set_result($results)
+    {
+      array_push($this->result, $results);
+    }
+    
   //send result
   public function getResult()
   {
