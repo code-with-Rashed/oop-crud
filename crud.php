@@ -166,30 +166,30 @@ class Database
     }
   }
 
-  // Private function to check if table exists for use with queries
-  private function tableExist(string $table)
+  //check if table is exist for use with queries
+  private function table_exist(string $table)
   {
-    $sql = "SHOW TABLES FROM $this->db_name LIKE '$table' ";
-    $this->myQuery = $sql;
-    $tableInDb = $this->mysqli->query($sql);
-    if ($tableInDb) {
-      if ($tableInDb->num_rows == 1) {
+    $sql = "SHOW TABLES FROM $this->db_name LIKE '$table'";
+    try {
+      $result = $this->mysqli->query($sql);
+      if ($result->num_rows) {
         return true;
       } else {
-        array_push($this->result, $table . " does not exist in this Database.");
-        return false;
+        die("This table ($table) does not exist in this ($this->db_name) DATABASE");
       }
-    } else {
-      return false;
+    } catch (\Throwable $err) {
+      echo "<br>Query : $sql<br>";
+      die($err->getMessage());
     }
   }
-  
-    //set result
-    private function set_result($results)
-    {
-      array_push($this->result, $results);
-    }
-    
+  //-------------------------------------
+
+  //set result
+  private function set_result($results)
+  {
+    array_push($this->result, $results);
+  }
+
   //send result
   public function getResult()
   {
