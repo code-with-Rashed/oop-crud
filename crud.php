@@ -46,31 +46,31 @@ class Database
     }
   }
 
-  //Update Function
-  public function update(string $table, $update = [], $where = null)
+  //update method
+  public function update(string $table, array $update = [], string $where = null):bool
   {
-    if ($this->tableExist($table)) {
-      $args = [];
-      foreach ($update as $key => $value) {
-        $args[] = " $key = '$value' ";
-      }
-      $sql = "UPDATE $table SET " . implode(" , ", $args);
-      if ($where != null) {
-        $sql .= " WHERE $where";
-      }
-      $this->myQuery = $sql;
-      if ($this->mysqli->query($sql)) {
-        array_push($this->result, $this->mysqli->affected_rows);
-        return true;
-      } else {
-        array_push($this->result, $this->mysqli->error);
-        return false;
-      }
+    $this->table_exist($table);
+    $args = [];
+    foreach ($update as $key => $value) {
+      $args[] = "$key = '$value'";
     }
+    $update_sql = "UPDATE $table SET " . implode(" , ", $args);
+    if ($where) {
+      $update_sql .= " WHERE $where";
+    }
+    try {
+      $this->mysqli->query($update_sql);
+    } catch (\Throwable $err) {
+      echo "<br>Query : $update_sql<br>";
+      die($err->getMessage());
+    }
+    $this->set_result($this->mysqli->affected_rows);
+    return true;
   }
+  //--------------
 
   //delete method
-  public function delete(string $table, string $where):bool
+  public function delete(string $table, string $where): bool
   {
     $this->table_exist($table);
     $delete_sql = "DELETE FROM $table WHERE $where";
