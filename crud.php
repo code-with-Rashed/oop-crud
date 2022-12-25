@@ -70,7 +70,7 @@ class Database
   }
 
   //delete method
-  public function delete(string $table, string $where):int
+  public function delete(string $table, string $where):bool
   {
     $this->table_exist($table);
     $delete_sql = "DELETE FROM $table WHERE $where";
@@ -80,7 +80,8 @@ class Database
       echo "<br>Query : $delete_sql<br>";
       die($err->getMessage());
     }
-    return $this->mysqli->affected_rows;
+    $this->set_result($this->mysqli->affected_rows);
+    return true;
   }
 
   //select Function
