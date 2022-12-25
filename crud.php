@@ -47,7 +47,7 @@ class Database
   }
 
   //update method
-  public function update(string $table, array $update = [], string $where = null):bool
+  public function update(string $table, array $update = [], string $where = null): bool
   {
     $this->table_exist($table);
     $args = [];
@@ -136,34 +136,27 @@ class Database
     }
   }
 
-  //sql command exequte function
-  public function sql(string $sql)
+  //direct sql comand execution method
+  public function sql(string $sql_query): bool
   {
-    $this->myQuery = $sql;
-    $query = $this->mysqli->query($sql);
-    if ($query) {
-      $sql_arr = explode(" ", $sql);
-      $sql_type = strtolower($sql_arr[0]);
-      switch ($sql_type) {
-        case 'insert':
-          array_push($this->result, $this->mysqli->insert_id);
-          break;
-        case 'update':
-          array_push($this->result, $this->mysqli->affected_rows);
-          break;
-        case 'delete':
-          array_push($this->result, $this->mysqli->affected_rows);
-          break;
-        case 'select':
-          array_push($this->result, $query->fetch_all(MYSQLI_ASSOC));
-          break;
-      }
-      return true;
-    } else {
-      array_push($this->result, $this->mysqli->error);
-      return false;
+    try {
+      $run_query = $this->mysqli->query($sql_query);
+    } catch (\Throwable $err) {
+      echo "<br>Query : $sql_query<br>";
+      die($err->getMessage());
     }
+    $sql_array = explode(" ", $sql_query);
+    $sql_type = strtolower($sql_array[0]);
+    match ($sql_type) {
+      "select" => $this->set_result($run_query->fetch_all(MYSQLI_ASSOC)),
+      "insert" => $this->set_result($this->mysqli->insert_id),
+      "update" => $this->set_result($this->mysqli->affected_rows),
+      "delete" => $this->set_result($this->mysqli->affected_rows),
+      default => $this->set_result($run_query)
+    };
+    return true;
   }
+  //----------------------------------
 
   //check if table is exist for use with queries
   private function table_exist(string $table)
