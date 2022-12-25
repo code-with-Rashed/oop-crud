@@ -69,20 +69,18 @@ class Database
     }
   }
 
-  //Delete Function
-  public function delete(string $table, string $where)
+  //delete method
+  public function delete(string $table, string $where):int
   {
-    if ($this->tableExist($table)) {
-      $sql = "DELETE FROM $table WHERE $where";
-      $this->myQuery = $sql;
-      if ($this->mysqli->query($sql)) {
-        array_push($this->result, $this->mysqli->affected_rows);
-        return true;
-      } else {
-        array_push($this->result, $this->mysqli->error);
-        return false;
-      }
+    $this->table_exist($table);
+    $delete_sql = "DELETE FROM $table WHERE $where";
+    try {
+      $this->mysqli->query($delete_sql);
+    } catch (\Throwable $err) {
+      echo "<br>Query : $delete_sql<br>";
+      die($err->getMessage());
     }
+    return $this->mysqli->affected_rows;
   }
 
   //select Function
