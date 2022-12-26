@@ -84,34 +84,33 @@ class Database
     return true;
   }
 
-  //select Function
-  public function select(string $table, $rows = "*", $join = null, $where = null, $order = null, $start = null, $limit = null)
+  //select method
+  public function select(string $table, string $column = "*", string $join = null, string $where = null, string $order = null, int $start = null, int $limit = null)
   {
-    if ($this->tableExist($table)) {
-      $sql = "SELECT $rows FROM $table";
-      if ($join != null) {
-        $sql .= " JOIN $join ";
-      }
-      if ($where != null) {
-        $sql .= " WHERE $where ";
-      }
-      if ($order != null) {
-        $sql .= " ORDER BY $order ";
-      }
-      if ($start !== null && $limit != null) {
-        $sql .= " LIMIT $start , $limit ";
-      }
-      $this->myQuery = $sql;
-      $query = $this->mysqli->query($sql);
-      if ($query) {
-        $this->result = $query->fetch_all(MYSQLI_ASSOC);
-        return true;
-      } else {
-        array_push($this->result, $this->mysqli->error);
-        return false;
-      }
+    $this->table_exist($table);
+    $select_sql = "SELECT $column FROM $table";
+    if ($join) {
+      $select_sql .= " JOIN $join";
     }
+    if ($where) {
+      $select_sql .= " WHERE $where";
+    }
+    if ($order) {
+      $select_sql .= " ORDER BY $order";
+    }
+    if (!is_null($start) && $limit) {
+      $select_sql .= " LIMIT $start , $limit";
+    }
+    try {
+      $result = $this->mysqli->query($select_sql);
+    } catch (\Throwable $err) {
+      echo "<br>Query : $select_sql<br>";
+      die($err->getMessage());
+    }
+    $this->set_result($result->fetch_all(MYSQLI_ASSOC));
+    return true;
   }
+  //-------------
 
   //total row count method
   public function count_row(string $table, string $join = null, string $where = null): bool
