@@ -28,23 +28,23 @@ class Database
     }
   }
 
-  //Insert Function
-  public function insert(string $table, $params = [])
+  //insert method
+  public function insert(string $table, array $params = [])
   {
-    if ($this->tableExist($table)) {
-      $table_column = implode(" , ", array_keys($params));
-      $table_value = implode("' , '", $params);
-      $sql = "INSERT INTO $table ($table_column) VALUES ('$table_value')";
-      $this->myQuery = $sql;
-      if ($this->mysqli->query($sql)) {
-        array_push($this->result, $this->mysqli->insert_id);
-        return true;
-      } else {
-        array_push($this->result, $this->mysqli->error);
-        return false;
-      }
+    $this->table_exist($table);
+    $column_name = implode(" , ", array_keys($params));
+    $column_value = implode("' , '", $params);
+    $insert_sql = "INSERT INTO $table ($column_name) VALUE ('$column_value')";
+    try {
+      $this->mysqli->query($insert_sql);
+    } catch (\Throwable $err) {
+      echo "<br>Query : $insert_sql<br>";
+      die($err->getMessage());
     }
+    $this->set_result($this->mysqli->insert_id);
+    return true;
   }
+  //-------------
 
   //update method
   public function update(string $table, array $update = [], string $where = null): bool
@@ -114,7 +114,7 @@ class Database
   }
 
   //total row count method
-  public function count_row(string $table, string $join = null, string $where = null):bool
+  public function count_row(string $table, string $join = null, string $where = null): bool
   {
     $this->table_exist($table);
     $count_sql = "SELECT COUNT(*) FROM $table";
