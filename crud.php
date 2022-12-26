@@ -16,16 +16,13 @@ class Database
   //open connection
   public function __construct()
   {
-    echo ini_get("mysqli.default_port");
-    if (!$this->conn) {
-      $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
-      $this->conn = true;
-      if ($this->mysqli->connect_error) {
-        array_push($this->result, $this->mysqli->connect_error);
-        return false;
+    try {
+      if (!$this->conn) {
+        $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name, $this->db_port);
+        $this->conn = true;
       }
-    } else {
-      return false;
+    } catch (\Throwable $err) {
+      die($err->getMessage());
     }
   }
 
