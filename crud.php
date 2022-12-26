@@ -9,7 +9,6 @@ class Database
 
   private $mysqli = ""; // This will be our mysqli object
   private $result = []; // Any results from a query will be stored here
-  private $myQuery = ""; // used for debugging process with SQL return
 
   private $conn = false;
 
@@ -187,13 +186,7 @@ class Database
     $this->result = [];
     return $val;
   }
-
-  //send sql query for debugging
-  public function getSql()
-  {
-    return $this->myQuery;
-  }
-
+  
   //escape string
   public function escapeString($data)
   {
