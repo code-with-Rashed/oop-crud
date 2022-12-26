@@ -200,12 +200,9 @@ class Database
   public function __destruct()
   {
     if ($this->conn) {
-      if ($this->mysqli->close()) {
-        $this->conn = false;
-        return true;
-      }
-    } else {
-      return false;
+      $this->mysqli->close();
+      $this->conn = false;
     }
   }
+  //--------------
 }
