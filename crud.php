@@ -113,28 +113,27 @@ class Database
     }
   }
 
-  // Count table records
-  public function tableRowsCount(string $table, $join = null, $where = null)
+  //total row count method
+  public function count_row(string $table, string $join = null, string $where = null):bool
   {
-    if ($this->tableExist($table)) {
-      $sql = "SELECT COUNT(*) FROM $table";
-      if ($join != null) {
-        $sql .= " JOIN $join";
-      }
-      if ($where != null) {
-        $sql .= " WHERE $where";
-      }
-      $this->myQuery = $sql;
-      $total = $this->mysqli->query($sql);
-      if ($total && $total->num_rows > 0) {
-        array_push($this->result, $total->fetch_row());
-        return true;
-      } else {
-        array_push($this->result, $this->mysqli->error);
-        return false;
-      }
+    $this->table_exist($table);
+    $count_sql = "SELECT COUNT(*) FROM $table";
+    if ($join) {
+      $count_sql .= " JOIN $join";
     }
+    if ($where) {
+      $count_sql .= " WHERE $where";
+    }
+    try {
+      $total = $this->mysqli->query($count_sql);
+    } catch (\Throwable $err) {
+      echo "<br>Query : $count_sql<br>";
+      die($err->getMessage());
+    }
+    $this->set_result($total->fetch_row());
+    return true;
   }
+  //----------------------
 
   //direct sql comand execution method
   public function sql(string $sql_query): bool
