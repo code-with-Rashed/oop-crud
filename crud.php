@@ -6,6 +6,7 @@ class Database
   private $db_username = "root";  //Database User Name
   private $db_password = "";    //Database Password
   private $db_name = "test";   //Database Name
+  private $db_port = 3306;       //Database Port Number
 
   private $mysqli = ""; // This will be our mysqli object
   private $result = []; // Any results from a query will be stored here
@@ -15,6 +16,7 @@ class Database
   //open connection
   public function __construct()
   {
+    echo ini_get("mysqli.default_port");
     if (!$this->conn) {
       $this->mysqli = new mysqli($this->db_host, $this->db_username, $this->db_password, $this->db_name);
       $this->conn = true;
@@ -186,7 +188,7 @@ class Database
     $this->result = [];
     return $val;
   }
-  
+
   //escape string
   public function escapeString($data)
   {
